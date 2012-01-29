@@ -1,8 +1,6 @@
 {
   "name": "koala-t",
-  "version": "0.0.1",
-
-  "preferGlobal": true,
+  "version": "0.0.2",
 
   "author": "Josh Perez <josh@goatslacker.com>",
   "description": "Koala-t checks for code quality",
