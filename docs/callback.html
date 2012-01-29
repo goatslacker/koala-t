@@ -6,7 +6,7 @@ will fail.</p>             </td>             <td class="code">               <di
   <span class="k">return</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
     <span class="nx">args</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
-      <span class="nx">errs</span> <span class="o">=</span> <span class="nx">arg</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="nx">errs</span> <span class="o">=</span> <span class="nx">errs</span> <span class="o">||</span> <span class="nx">arg</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="p">;</span>
     <span class="p">});</span>
     <span class="nx">cb</span><span class="p">(</span><span class="nx">errs</span><span class="p">);</span>
   <span class="p">};</span>
