@@ -1,4 +1,0 @@
-{
-  "lint": ["koala.js", "lib/"],
-  "test": ["test/index.js"]
-}
