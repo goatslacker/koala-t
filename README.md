@@ -1,5 +1,7 @@
 # koala-t
 
+[![Build Status](https://secure.travis-ci.org/goatslacker/koala-t.png)](http://travis-ci.org/goatslacker/koala-t)
+
 Tool for checking code quality and for use in continuous integration.
 
 `koala-t` will
