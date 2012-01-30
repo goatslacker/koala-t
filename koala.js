@@ -13,8 +13,8 @@ var cover = require('./lib/coverage');
 var Find = require('./lib/find');
 // Tasks lets us run tasks in parallel
 var Tasks = require('./lib/tasks');
-// callback will keep our code dry
-var callback = require('./lib/utils/callback');
+// ErrorManager will keep our code dry
+var ErrorManager = require('./lib/error_manager');
 
 // We initialize the program
 // and parse all options passed in by the user via CLI
@@ -43,10 +43,11 @@ program.percentage = program.percentage || options.percentage || 80;
 function linter(done) {
   var find = new Find();
   var tasks = new Tasks();
+  var fn = new ErrorManager();
 
   find.on('file', function (file) {
     tasks.add(function (done) {
-      lint(file, callback(done));
+      lint(file, fn.onComplete(done));
     });
   });
 
@@ -64,15 +65,16 @@ function linter(done) {
 function tester(done) {
   var find = new Find();
   var tasks = new Tasks();
+  var fn = new ErrorManager();
 
   find.on('file', function (file) {
     tasks.add(function (done) {
       if (program.coverage) {
         cover(program.coverage, function (sandbox, complete) {
-          test(file, sandbox, callback(complete));
-        }, callback(done));
+          test(file, sandbox, fn.onComplete(complete));
+        }, fn.onComplete(done));
       } else {
-        test(file, null, callback(done));
+        test(file, null, fn.onComplete(done));
       }
     });
   });

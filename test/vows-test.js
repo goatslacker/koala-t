@@ -1,7 +1,5 @@
 var vows = require('vows');
 var assert = require('assert');
-var program = require('commander');
-program.quiet = true;
 
 // items we're testing
 var lint = require('../lib/lint');
