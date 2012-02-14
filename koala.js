@@ -42,12 +42,12 @@ program.percentage = program.percentage || options.percentage || 80;
 // then it carries out the task, linting all the files.
 function linter(done) {
   var find = new Find();
-  var tasks = new Tasks();
+  var tasks = new Tasks('lint');
   var fn = new ErrorManager();
 
   find.on('file', function (file) {
     tasks.add(function (done) {
-      lint(file, fn.onComplete(done));
+      lint(file, fn.onComplete(done, 'lint ' + file));
     });
   });
 
@@ -64,17 +64,17 @@ function linter(done) {
 // Otherwise, it will just run the test runner(s).
 function tester(done) {
   var find = new Find();
-  var tasks = new Tasks();
+  var tasks = new Tasks('tests');
   var fn = new ErrorManager();
 
   find.on('file', function (file) {
     tasks.add(function (done) {
       if (program.coverage) {
         cover(program.coverage, function (sandbox, complete) {
-          test(file, sandbox, fn.onComplete(complete));
-        }, fn.onComplete(done));
+          test(file, sandbox, fn.onComplete(complete, 'test ' + file));
+        }, fn.onComplete(done, 'coverage ' + file));
       } else {
-        test(file, null, fn.onComplete(done));
+        test(file, null, fn.onComplete(done, 'test ' + file));
       }
     });
   });
@@ -104,7 +104,7 @@ function exit(statusCode) {
 // add lint, and test task;
 // when finished run our exit function.
 function koala_t() {
-  var tasks = new Tasks();
+  var tasks = new Tasks('koala-t');
   tasks.add(linter);
   tasks.add(tester);
   tasks.run(exit);
