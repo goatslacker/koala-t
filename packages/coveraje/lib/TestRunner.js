@@ -1,46 +1,46 @@
 /*
     coveraje - a simple javascript code coverage tool.
-
+    
     TestRunner
-
+    
     Copyright (c) 2011 Wolfgang Kluge (klugesoftware.de, gehirnwindung.de)
 */
 
 (function () {
     "use strict";
-
+    
     var vm = require("vm"),
         CoverajeTimer = require("./TimerProxy").CoverajeTimer,
         CoverajeEvent = require("./EventEmitter").CoverajeEvent,
         isOwn = require("./utils").utils.isOwn;
-
+    
     function TestRunner(option, instance) {
         var shell = require("./shell").createShell(option);
-
+        
         function setNewTimer(ctx) {
             var timer = new CoverajeTimer();
-
+            
             ctx.setTimeout = timer.setTimeout;
             ctx.clearTimeout = timer.clearTimeout;
             ctx.setInterval = timer.clearTimeout;
             ctx.clearInterval = timer.clearTimeout;
             ctx[option.prefix + "stopTimers"] = timer.stopTimers;
         }
-
+        
         function createContext() {
             /*jshint browser: true*/
             var context = vm.createContext();
-
+            
             context[option.prefix + "runtime"] = instance.runtime;
             context.console = console;
-
+            
             setNewTimer(context);
-
+            
             var ctxs = option.globals.split(/\s+/g);
             var ctxl = ctxs.length;
             for (var i = 0; i < ctxl; i++) {
                 var bshared = false;
-
+                
                 if (ctxs[i] === "browser") {
                     if (context.window == null) {
                         try {
@@ -75,7 +75,7 @@
                     if (context.require == null) context.require = require;
                     if (context.module == null) context.module = module;
                     if (context.exports == null) context.exports = {};
-                    if (context.__filename == null) context.__filename = option.__filename || __filename;
+                    if (context.__filename == null) context.__filename = option.__filename || process.mainModule.filename || __filename;
                     if (context.__dirname == null) {
                         context.__dirname = require("path").dirname(context.__filename);
                     }
@@ -83,10 +83,10 @@
             }
             return context;
         }
-
+        
         function run(runner, key, context, event) {
             var ctx = context;
-
+            
             function postRun() {
                 // stop all timers now
                 process.nextTick(function () {
@@ -94,22 +94,21 @@
                     event.complete(key, ctx);
                 });
             }
-
+            
             setNewTimer(ctx); // each run has its own timer
-
+            
             var testEvent;
-
+            
             shell.writeLine("run <color bright white>%s</color>", key || "");
-
+            
             try {
                 testEvent = runner(ctx);
             } catch (ex) {
-                // stop all timers now
                 event.error(key, ex);
                 postRun();
                 return;
             }
-
+            
             if (testEvent instanceof CoverajeEvent) {
                 testEvent
                     .onComplete(postRun)
@@ -123,17 +122,17 @@
                 ctx.setTimeout(postRun, option.wait);
             }
         }
-
+        
         function runMultiple(runner, context, event) {
             var runKeys = [], rk, rkl;
             var completed = [], errors = [];
-
+            
             for (rk in runner) {
                 if (isOwn(runner, rk) && typeof runner[rk] === "function") {
                     runKeys.push(rk);
                 }
             }
-
+            
             rkl = runKeys.length;
             if (rkl === 0) {
                 event.complete("", context);
@@ -142,17 +141,17 @@
                 run(runner[rk], rk, context, event);
             } else {
                 var me = new CoverajeEvent();
-
+                
                 me
                     .onComplete(function (key) {
                         if (completed.indexOf(key) === -1) {
                             shell.write(".");
                             completed.push(key);
                         }
-
+                        
                         if (runKeys.length === completed.length) {
                             shell.writeLine(" complete");
-
+                            
                             for (var i = 0; i < errors.length; i++) {
                                 event.error(errors[i].k, errors[i].m);
                             }
@@ -162,22 +161,22 @@
                     .onError(function (key, msg) {
                         errors.push({k: key, m: msg});
                     });
-
+                
                 for (var i = 0; i < runKeys.length; i++) {
                     rk = runKeys[i];
                     run(runner[rk], rk, context, me);
                 }
             }
-
+            
         }
-
+        
         //
         // run the injected code and one or all test runners
         // in their own context
         function runTest(code, runner) {
             /*jshint browser: true*/
             var event = new CoverajeEvent();
-
+            
             event
                 .onComplete(function () {
                     instance.complete(instance);
@@ -187,17 +186,17 @@
                 })
                 .onStart(function (key) {
                     instance.runtime.reset();
+                    
                     var context = createContext();
-
-                    var ret;
                     try {
-                        var script = vm.createScript(code, "extended code");
-                        ret = script.runInContext(context);
+                        var script = vm.createScript(code.codeToRun, "initial code");
+                        script.runInContext(context);
                     } catch (ex2) {
                         event.error(key, ex2.stack ? ex2.stack : ex2);
                         return;
                     }
-
+                    instance.runtime.setStartState();
+                    
                     if (key != null && key !== "") {
                         runner = runner[key];
                         if (typeof runner !== "function") {
@@ -205,7 +204,7 @@
                             return;
                         }
                     }
-
+                    
                     if (runner == null) {
                         // set to complete, even if no runners are defined
                         event.complete();
@@ -223,15 +222,15 @@
                         }
                     }
                 });
-
+            
             return event;
         }
-
+        
         return {
             runTest: runTest
         };
     }
-
+    
     if (typeof exports !== "undefined" && exports) {
         exports.TestRunner = TestRunner;
     }

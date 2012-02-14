@@ -23,6 +23,7 @@ program
   .option('-l, --lint [file|dir]', 'Lint specific file or directory')
   .option('-p, --percentage [number]', 'The amount of code coverage required to pass')
   .option('-q, --quiet', 'Keep things quiet.')
+  .option('-s, --coverage-server', 'Start coverage server.')
   .option('-t, --test [file|dir]', 'Test specific file or directory')
   .parse(process.argv);
 
@@ -97,7 +98,7 @@ function exit(statusCode) {
     }
   }
 
-  process.exit(statusCode);
+  program.coverageServer || process.exit(statusCode);
 }
 
 // Create a new Task Object;

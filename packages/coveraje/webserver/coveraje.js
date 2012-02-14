@@ -9,26 +9,6 @@
 /*jshint
     jquery: true,
     browser: true,
-    
-    white: true,
-    eqnull: true,
-    multistr: true,
-    plusplus: false,
-    regexp: true,
-    strict: true,
-    
-    bitwise: true,
-    eqeqeqe: true,
-    forin: true,
-    immed: true,
-    latedef: true,
-    newcap: true,
-    noarg: true,
-    noempty: true,
-    nonew: true,
-    undef: true,
-    trailing: true,
-    
     devel: true
 */
 
@@ -36,6 +16,8 @@ var coverajeResults = (function () {
     "use strict";
     
     var settings;
+    var lastRunData;
+    var currentFileID;
     
     //
     // helper for "hasOwnProperty"
@@ -111,7 +93,7 @@ var coverajeResults = (function () {
     //
     // colorize-function
     // allows overlapping definitions
-    function colorize(data, text) {
+    function colorize(data, text, scriptColors) {
         var lens = [text.length];
         var st = [null];
         
@@ -191,12 +173,12 @@ var coverajeResults = (function () {
         }
         
         var col, ci, dl, i;
-        
+       
         // simple color coding
-        if (settings && settings.colors) {
-            for (var k in settings.colors) {
-                if (isOwn(settings.colors, k) && settings.colors[k]) {
-                    col = settings.colors[k];
+        if (scriptColors) {
+            for (var k in scriptColors) {
+                if (isOwn(scriptColors, k) && scriptColors[k]) {
+                    col = scriptColors[k];
                     dl = col.length;
                     for (i = 0; i < dl; i++) {
                         ci = col[i];
@@ -270,8 +252,6 @@ var coverajeResults = (function () {
                 out.push(">");
             }
             
-            
-            
             out.push(
                 text
                     .substr(ci, lens[i])
@@ -289,18 +269,94 @@ var coverajeResults = (function () {
         return out.join("");
     }
     
+    function getRepData() {
+        return lastRunData ? {
+            branches: lastRunData.branches[currentFileID],
+            visited: lastRunData.visited[currentFileID],
+            counted: lastRunData.counted
+        } : null;
+    }
+    
     function showText(code) {
         var sp = $(document).scrollTop();
-        $("#code").html(code);
+        $("#code").html(code.replace(/\t/g, "<span class='tab'>\t</span>"));
         $(document).scrollTop(sp);
     }
     
-    function show(data) {
-        var max = data.counted.length;
-        $("#colors").empty();
+    function showLines(skippedLines, code) {
+        setTimeout(function () {
+            var start = skippedLines + 1;
+            var n = /\n/g;
+            $("#lines").html(
+                $.makeArray($.map(code.split(n), function (el, idx) {
+                    return idx + start;
+                })).join("\n")
+            );
+        }, 1);
+    }
+    
+    function showFile(f) {
+        var repData = getRepData();
         
-        // show colored code
-        showText(colorize(data, settings.code));
+        showLines(f.skippedLines, f.code);
+        showText(colorize(repData, f.code, f.colors));
+    }
+    
+    function showFiles(codes) {
+        
+        if (codes.length === 1) {
+            currentFileID = 0;
+            showFile(settings.codes[0]);
+            $("BODY").addClass("no-files");
+        } else if (codes.length > 1) {
+            var cf;
+            $("#files>select>option").each(function () {
+                var $t = $(this);
+                if ($(this).val() === currentFileID) {
+                    cf = $t.text();
+                    return false;
+                };
+            });
+            
+            var $sel = $("<select/>").on("change", function () {
+                currentFileID = $(this).val();
+                showFile(settings.codes[currentFileID]);
+            });
+            
+            currentFileID = 0;
+            for (var i = 0, il = codes.length; i < il; i++) {
+                var name = codes[i].name;
+                
+                if (name === cf) {
+                    currentFileID = i;
+                }
+                
+                $("<option/>")
+                    .val(i)
+                    .text(name)
+                    .appendTo($sel);
+            }
+            
+            $sel
+                .appendTo($("#files").empty())
+                .val(currentFileID)
+                .trigger("change");
+            
+            $("BODY").removeClass("no-files");
+        }
+    }
+    
+    function currentText() {
+        if (settings.codes != null) {
+            return settings.codes[currentFileID].code;
+        }
+        return "";
+    }
+    
+    function show() {
+        var repData = getRepData();
+        var max = repData.counted.length;
+        $("#colors").empty();
         
         // show the colors
         var $c = $("<div>");
@@ -312,7 +368,7 @@ var coverajeResults = (function () {
             /*jshint white: false*/
             var ii = Math.round(i * doDiff);
             var col = colors.calc(max, ii);
-            var d = i < 2 ? data.counted[i] : data.counted[ii];
+            var d = i < 2 ? repData.counted[i] : repData.counted[ii];
             if (d == null) d = "";
             
             $c.append(
@@ -340,15 +396,38 @@ var coverajeResults = (function () {
             dataType: "json",
             contentType: "application/json",
             success: function (a) {
-                show(a);
+                lastRunData = a.report;
+                settings.codes = a.files;
+                showFiles(a.files);
+                
+                show();
             },
             error: function (r) {
-                console.log("error", r);
+                if (window.console) console.log("error", r);
             },
             complete: function () {
                 $w.hide();
             }
         });
+    }
+    
+    function showRunners(runners) {
+        if (runners) {
+            var $t = $("<div/>");
+            
+            for (var i = -1, il = runners.length; i < il; i++) {
+                var n = runners[i] || ""; //
+                
+                $t.append(
+                    $("<button />")
+                        .text(i === -1 ? "(test all)" : n)
+                        .data("runnerid", n)
+                );
+            }
+            
+            $t.children().appendTo($("#tests").empty());
+            $t = null;
+        }
     }
     
     function init() {
@@ -363,42 +442,17 @@ var coverajeResults = (function () {
             success: function (a) {
                 settings = a;
                 
-                if (settings) {
-                    if (settings.code) {
-                        // show lines
-                        setTimeout(function () {
-                            var start = a.skippedLines + 1;
-                            var n = /\n/g;
-                            $("#lines").html(
-                                $.makeArray($.map(settings.code.split(n), function (el, idx) {
-                                    return idx + start;
-                                })).join("\n")
-                            );
-                        }, 1);
-                        
-                        showText(colorize(null, settings.code));
-                        
-                        if (settings.runner) {
-                            var $t = $("<div/>");
-                            
-                            for (var i = -1; i < settings.runner.length; i++) {
-                                var n = settings.runner[i] || ""; //
-                                
-                                $t.append(
-                                    $("<button />")
-                                        .text(i === -1 ? "(test all)" : n)
-                                        .data("runnerid", n)
-                                );
-                            }
-                            
-                            $t.children().appendTo($("#tests").empty());
-                            $t = null;
-                        }
+                if (a) {
+                    var cde, skipped;
+                    if (a.codes && a.codes.length > 0) {
+                        showFiles(a.codes);
+                        showFile(a.codes[0]);
                     }
+                    showRunners(a.runner);
                 }
             },
             error: function (r) {
-                console.log("error", r);
+                if (window.console) console.log("error", r);
             }
         });
     }

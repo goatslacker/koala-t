@@ -12,36 +12,14 @@
     See LICENSE in the root folder for more details.
 */
 
-/*jshint
-    node: true,
-    white: true,
-    eqnull: true,
-    multistr: true,
-    plusplus: false,
-    regexp: false,
-    strict: true,
-    
-    bitwise: true,
-    eqeqeqe: true,
-    forin: true,
-    immed: true,
-    latedef: true,
-    newcap: true,
-    noarg: true,
-    noempty: true,
-    nonew: true,
-    undef: true,
-    trailing: true
-*/
-
-exports.run = function (file, event, option) {
+exports.run = function (file, event, option, requireSubst) {
     "use strict";
     var nodeunit;
     
     if (option == null) option = {};
     
     try {
-        nodeunit = require("nodeunit");
+        nodeunit = requireSubst("nodeunit");
     } catch (ex1) {
         event
             .error("<color yellow>nodeunit</color> not installed.")

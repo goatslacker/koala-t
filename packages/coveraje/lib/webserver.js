@@ -110,10 +110,7 @@
                 JSON.stringify({
                     version: Coveraje.version,
                     options: option,
-                    runner: runnerKeys,
-                    code: instance.code,
-                    skippedLines: instance.skippedLines,
-                    colors: colorizer(instance.code)
+                    runner: runnerKeys
                 }),
                 res, 200, "application/json"
             );
@@ -177,7 +174,17 @@
                                     })
                                     .onComplete(function (key, context) {
                                         writeString(
-                                            JSON.stringify(instance.runtime.reportData()),
+                                            JSON.stringify({
+                                                files: instance.getCodes(function (val) {
+                                                    return {
+                                                        name: val.name,
+                                                        code: val.code,
+                                                        skippedLines: val.skippedLines,
+                                                        colors: colorizer(val.code)
+                                                    };
+                                                }),
+                                                report: instance.runtime.reportData()
+                                            }),
                                             res, 200, "application/json"
                                         );
                                     })
@@ -225,7 +232,7 @@
                     }
 
                 });
-
+                
                 server.listen(option.serverPort, option.serverHost);
                 shell.writeLine("Server running at <color bright white>http://%s:%d/</color>", option.serverHost, option.serverPort);
                 
