@@ -36,6 +36,7 @@ program.lint = program.lint || options.lint || ['src', 'lib'];
 program.test = program.test || options.test || ['test'];
 program.coverage = program.coverage || options.coverage || null;
 program.percentage = program.percentage || options.percentage || 80;
+program.typed = options.typed;
 
 
 // Our linting function
