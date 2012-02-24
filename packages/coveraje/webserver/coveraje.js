@@ -193,11 +193,11 @@ var coverajeResults = (function () {
         
         if (data && data.counted) {
             var max = data.counted.length;
-            if (data.visited) {
-                dl = data.visited.length;
+            if (data.visits) {
+                dl = data.visits.length;
                 
                 for (i = 0; i < dl; i++) {
-                    ci = data.visited[i];
+                    ci = data.visits[i];
                     col = colors.calc(max, ci.i);
                     
                     setColors(ci.s, ci.e, {
@@ -272,7 +272,7 @@ var coverajeResults = (function () {
     function getRepData() {
         return lastRunData ? {
             branches: lastRunData.branches[currentFileID],
-            visited: lastRunData.visited[currentFileID],
+            visits: lastRunData.visits[currentFileID],
             counted: lastRunData.counted
         } : null;
     }
@@ -315,7 +315,7 @@ var coverajeResults = (function () {
                 if ($(this).val() === currentFileID) {
                     cf = $t.text();
                     return false;
-                };
+                }
             });
             
             var $sel = $("<select/>").on("change", function () {
@@ -324,17 +324,61 @@ var coverajeResults = (function () {
             });
             
             currentFileID = 0;
-            for (var i = 0, il = codes.length; i < il; i++) {
-                var name = codes[i].name;
+            
+            var uc = codes.map(function (v) {
+                var n = v.name;
+                var pdx = n.lastIndexOf("/");
+                if (pdx === -1) pdx = n.lastIndexOf("\\");
+                
+                return {
+                    path: n.substr(0, pdx + 1) || "",
+                    name: n.substr(pdx + 1),
+                    index: v.index
+                };
+            });
+            
+            uc.sort(function (a, b) {
+                var an = a.path.toLowerCase();
+                var bn = b.path.toLowerCase();
+                
+                if (an > bn) {
+                    return 1;
+                } else if (an < bn) {
+                    return -1;
+                }
+                
+                an = a.name.toLowerCase();
+                bn = b.name.toLowerCase();
+                if (an > bn) {
+                    return 1;
+                } else if (an < bn) {
+                    return -1;
+                }
+                return 0;
+            });
+            
+            var lastPath = "";
+            var $at = $sel;
+            for (var i = 0, il = uc.length; i < il; i++) {
+                var path = uc[i].path;
+                var name = uc[i].name;
+                var idx = uc[i].index;
                 
                 if (name === cf) {
-                    currentFileID = i;
+                    currentFileID = idx;
+                }
+                
+                if (lastPath !== path) {
+                    lastPath = path;
+                    $at = $("<optgroup/>")
+                        .attr("label", path)
+                        .appendTo($sel);
                 }
                 
                 $("<option/>")
-                    .val(i)
+                    .val(idx)
                     .text(name)
-                    .appendTo($sel);
+                    .appendTo($at);
             }
             
             $sel

@@ -22,7 +22,7 @@
         function register_key(key) {
             if (!(key in data)) {
                 return data[key] = {
-                    visited: {},
+                    visits: {},
                     branches: {}
                 };
             }
@@ -31,11 +31,11 @@
         
         function visit_log(key, pos, endpos) {
             var idx = pos + "." + endpos;
-            data[key].visited[idx].counter++;
+            data[key].visits[idx].counter++;
         }
         
         function visit_register(key, pos, endpos) {
-            var o = register_key(key).visited;
+            var o = register_key(key).visits;
             
             var idx = pos + "." + endpos;
             if (!(idx in o)) {
@@ -43,7 +43,7 @@
             }
         }
         
-        function visitedArray(key, counted) {
+        function visitsArray(key, counted) {
             function sort(a, b) {
                 if (a.s === b.s) {
                     if (a.e === b.e) {
@@ -60,7 +60,7 @@
             for (var k in data) {
                 if (isOwn(data, k) && (key == null || key === k)) {
                     ret[k] = [];
-                    var o = data[k].visited;
+                    var o = data[k].visits;
                     for (idx in o) {
                         if (isOwn(o, idx)) {
                             var v = o[idx];
@@ -105,18 +105,19 @@
         }
         
         function copy(o) {
-            var ret;
+            var ret, i, il, oks;
+            
             if (o == null) {
                 ret = null;
-            } else if (Array.isArray(o)){
+            } else if (Array.isArray(o)) {
                 ret = [];
-                for (var i = 0, il = o.length; i < il; i++) {
+                for (i = 0, il = o.length; i < il; i++) {
                     ret.push(copy(o[i]));
                 }
             } else if (typeof o === "object") {
                 ret = {};
-                var oks = Object.keys(o);
-                for (var i = 0, il = oks.length; i < il; i++) {
+                oks = Object.keys(o);
+                for (i = 0, il = oks.length; i < il; i++) {
                     var k = oks[i];
                     ret[k] = copy(o[k]);
                 }
@@ -148,11 +149,11 @@
                     if (isOwn(data, k) && (key == null || key === k)) {
                         var start = startState == null || startState[k] == null ? {} : startState[k];
                         
-                        var visited = data[k].visited;
-                        var visited_start = start.visited || {};
-                        for (idx in visited) {
-                            if (isOwn(visited, idx)) {
-                                visited[idx].counter = visited_start[idx] == null ? 0 : visited_start[idx].counter;
+                        var visits = data[k].visits;
+                        var visits_start = start.visits || {};
+                        for (idx in visits) {
+                            if (isOwn(visits, idx)) {
+                                visits[idx].counter = visits_start[idx] == null ? 0 : visits_start[idx].counter;
                             }
                         }
                         
@@ -173,7 +174,7 @@
                 }
             },
             
-            visit: {
+            visits: {
                 register: visit_register,
                 call: visit_log,
                 
@@ -194,7 +195,7 @@
                 }
             },
             
-            branch: {
+            branches: {
                 register: function (key, kpos, kend, pos, endpos, isElse) {
                     if (pos !== 0 && endpos !== 0) {
                         visit_register(key, pos, endpos);
@@ -303,10 +304,7 @@
                     
                     require: function (m, self) {
                         if (m.charAt(0) === "." || m.indexOf(":") !== -1) {
-                            var rp = path.resolve(process.cwd(), m);
-                            if (!path.existsSync(rp)) {
-                                rp = path.resolve(path.dirname(self.filename), m);
-                            }
+                            var rp = path.resolve(path.dirname(self.filename), m);
                             var filename = Module._resolveFilename(rp, self);
                             if (Array.isArray(filename)) filename = filename[1];
                             if (requires && (requires.indexOf(filename) !== -1 || requires.indexOf("*") !== -1)) {
@@ -325,10 +323,10 @@
                 var idx, v;
                 for (var k in data) {
                     if (isOwn(data, k) && (key == null || key === k)) {
-                        var visited = data[k].visited;
-                        for (idx in visited) {
-                            if (isOwn(visited, idx)) {
-                                v = visited[idx];
+                        var visits = data[k].visits;
+                        for (idx in visits) {
+                            if (isOwn(visits, idx)) {
+                                v = visits[idx];
                                 if (counted.indexOf(v.counter) === -1) {
                                     counted.push(v.counter);
                                 }
@@ -347,7 +345,7 @@
                 
                 return {
                     counted: counted,
-                    visited: visitedArray(key, counted),
+                    visits: visitsArray(key, counted),
                     branches: branchesArray(key)
                 };
             },
@@ -401,8 +399,8 @@
                     }
                 }
 
-                calc("visited", this.visit.isCovered);
-                calc("branches", this.branch.isCovered);
+                calc("visits", this.visits.isCovered);
+                calc("branches", this.branches.isCovered);
                 
                 results.total = {
                     areas: totalAreas,
