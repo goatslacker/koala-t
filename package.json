@@ -26,7 +26,7 @@
   "license": "MIT",
 
   "dependencies": {
-    "uglify-js": ">=1.2",
+    "coveraje": "latest",
     "commander": "latest"
   },
 
