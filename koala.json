@@ -1,4 +1,4 @@
 {
-  "lint": ["koala.js", "lib/"],
-  "test": ["test/index.js"]
+  "lint": ["lib/"],
+  "vows": ["test/koala-test.js"]
 }

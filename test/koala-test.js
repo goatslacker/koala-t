@@ -74,7 +74,7 @@ vows.describe('koala').addBatch({
     },
 
     'should find this test file': function (file) {
-      assert.equal(file, __dirname + '/vows-test.js');
+      assert.equal(file, __dirname + '/koala-test.js');
     }
   },
 
@@ -84,8 +84,8 @@ vows.describe('koala').addBatch({
     },
 
     'we should have items to lint and test': function (topic) {
-      assert.equal(topic.lint.length, 2);
-      assert.equal(topic.test.length, 1);
+      assert.equal(topic.lint.length, 1);
+      assert.equal(topic.vows.length, 1);
     }
   }
 }).export(module);
