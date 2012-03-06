@@ -33,7 +33,8 @@ program
 // By default we lint all JavaScript files in `src/` and `lib/`, and
 // we test all JavaScript files in `test/`
 program.lint = program.lint || options.lint || ['src', 'lib'];
-program.test = program.test || options.test || ['test'];
+program.test = program.test || options.test || options.vows || ['test'];
+program.vows = options.vows;
 program.coverage = program.coverage || options.coverage || null;
 program.percentage = program.percentage || options.percentage || 80;
 
