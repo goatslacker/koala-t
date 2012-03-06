@@ -1,6 +1,6 @@
 {
   "name": "koala-t",
-  "version": "0.0.3",
+  "version": "0.0.4",
 
   "author": "Josh Perez <josh@goatslacker.com>",
   "description": "Koala-t checks for code quality",
@@ -14,7 +14,7 @@
     "prepublish": "docco koala.js lib/*.js lib/utils/*.js"
   },
 
-  "main": "./koala.js",
+  "main": "./lib/koala.js",
 
   "repository": {
     "type": "git",
