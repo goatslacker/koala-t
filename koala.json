@@ -1,4 +1,8 @@
 {
-  "lint": ["lib/"],
-  "vows": ["test/koala-test.js"]
+  "lint": ["lib", "src"],
+  "vows": ["test/*-test.coffee"],
+  "coverage": {
+    "files": ["lib/utils/fn.js"],
+    "percentage": 80
+  }
 }

@@ -1,6 +1,6 @@
 {
   "name": "koala-t",
-  "version": "0.0.4",
+  "version": "0.1.0",
 
   "author": "Josh Perez <josh@goatslacker.com>",
   "description": "Koala-t checks for code quality",
@@ -10,6 +10,7 @@
   },
 
   "scripts": {
+    "pretest": "rm -f test/*-test.js",
     "test": "./bin/koala-t",
     "prepublish": "docco koala.js lib/*.js lib/utils/*.js"
   },
@@ -27,6 +28,8 @@
 
   "dependencies": {
     "coveraje": "0.2.1",
+    "minimatch": "latest",
+    "coffeelint": "latest",
     "commander": "latest"
   },
 

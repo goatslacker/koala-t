@@ -1,19 +1,17 @@
 {
   "asi": false,
   "bitwise": false,
-  "boss": false,
-  "curly": true,
+  "boss": true,
+  "curly": false,
   "debug": false,
   "esnext": true,
   "eqeqeq": true,
-  "eqnull": false,
-  "evil": false,
+  "eqnull": true,
   "expr": true,
   "forin": true,
-  "immed": true,
-  "indent": 2,
+  "immed": false,
   "laxbreak": true,
-  "maxerr": 50,
+  "maxlen": 9001,
   "newcap": true,
   "noarg": true,
   "noempty": false,
@@ -26,6 +24,7 @@
   "regexp": false,
   "undef": true,
   "sub": false,
+  "supernew": true,
   "strict": false,
-  "white": true
+  "white": false
 }
