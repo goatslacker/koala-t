@@ -27,13 +27,14 @@
   "license": "MIT",
 
   "dependencies": {
-    "coveraje": "0.2.1",
+    "coveraje": "0.2.3",
     "minimatch": "latest",
     "coffeelint": "latest",
     "commander": "latest"
   },
 
   "devDependencies": {
+    "coffee-script": "latest",
     "docco": "latest",
     "vows": "latest"
   }
