@@ -28,6 +28,7 @@
 
   "dependencies": {
     "coveraje": "0.2.3",
+    "dune": "latest",
     "minimatch": "latest",
     "coffeelint": "latest",
     "commander": "latest"

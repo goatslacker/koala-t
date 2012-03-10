@@ -1,7 +1,7 @@
 app = require './app'
 util = require 'util'
 path = require 'path'
-dune = require './utils/dune'
+dune = require 'dune'
 coverage = require './coverage'
 minimatch = require 'minimatch'
 { find, fn } = app
