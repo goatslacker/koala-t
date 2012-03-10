@@ -19,7 +19,7 @@ instrument = (file) ->
       instance = inst
       exported = context.module.exports
     { globals: 'node', quiet: true }
-    app.noop
+    app.noop, (e, err) -> throw e or err
   )
 
   { instance, exported }

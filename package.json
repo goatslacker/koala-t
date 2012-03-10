@@ -27,7 +27,7 @@
   "license": "MIT",
 
   "dependencies": {
-    "coveraje": "0.2.3",
+    "coveraje": "0.2.4",
     "dune": "latest",
     "minimatch": "latest",
     "coffeelint": "latest",
