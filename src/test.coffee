@@ -36,7 +36,7 @@ runVows = (exported) ->
 # Returns a function which runs the tests
 compileTest = (file) ->
   fullPath = path.join process.cwd(), file
-  exported = dune fullPath, null, coverage.require fullPath
+  exported = dune.file fullPath, null, coverage.require fullPath
 
   return runVows exported if app.vows
 
