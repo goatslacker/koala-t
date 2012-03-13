@@ -8,14 +8,14 @@ vow 'find', module, {
     'all files within the testing directory':
       topic: -> find 'test'
 
-      'the result is an Array': (r) -> assert.isArray r
+      'the result is an Array': (r) -> assert.isTrue Array.isArray r
       'this test should be in the results': (r) ->
         assert.equal r.filter((v) -> v.match /find-test.coffee$/).length, 1
 
     'specific files using a glob':
       topic: -> find 'test/lib/v*'
 
-      'the result is an Array': (r) -> assert.isArray r
+      'the result is an Array': (r) -> assert.isTrue Array.isArray r
       'there should be 1 file test/lib/vow.js': (r) ->
         assert.equal r.length, 1
 }

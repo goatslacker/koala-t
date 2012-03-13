@@ -2,7 +2,7 @@
   "lint": ["lib", "src"],
   "vows": ["test/*-test.coffee"],
   "coverage": {
-    "files": ["lib/utils/fn.js"],
+    "files": ["lib/utils/fn.js", "lib/utils/find.js"],
     "percentage": 80
   }
 }

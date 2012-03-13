@@ -13,11 +13,11 @@ instrument = (file) ->
   instance = {}
   exported = {}
 
-  coveraje.cover(
-    fs.readFileSync(file, 'utf-8'),
+  coveraje.coverNode(
+    path.join process.cwd(), file
     (context, inst) =>
       instance = inst
-      exported = context.module.exports
+      exported = context
     { globals: 'node', quiet: true }
     app.noop
   )
