@@ -16,19 +16,21 @@ module.exports = imports = (fullPath) ->
   (file) ->
     start = file.substring 0, 2
 
+    filename = file
+
     if start is './' or start is '..'
       file = path.join dirname, file
-      file = "#{file}.js" unless path.extname file
+      filename = "#{file}.js" unless path.extname file
 
-    cover = app.coverage.files.filter(eq file).pop()
-    typed = app.typed.filter(eq file).pop()
+    cover = app.coverage.files.filter(eq filename).pop()
+    typed = app.typed.filter(eq filename).pop()
 
     if cover or typed
       if cover and typed
-        typedjs.exportCode coverage.asCode(file), file
+        typedjs.exportCode coverage.asCode(filename), filename
       else if cover
-        coverage.require file
+        coverage.require filename
       else if typed
-        typedjs.require file
+        typedjs.require filename
     else
       require file
