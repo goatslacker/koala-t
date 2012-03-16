@@ -32,10 +32,10 @@ app.coverage = app.coverage or options.coverage or { files: [] }
 app.coverage.percentage or= 80
 app.typed = app.typed or options.typed or []
 
-
 # Mixes in some utility functions
 fn.mixin util, app
 fn.mixin { fn, find, Tasks, noop }, app
 
+app.process = process
 
 module.exports = app

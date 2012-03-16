@@ -5,7 +5,7 @@ coverage = require './coverage'
 typedjs = require './typed'
 
 eq = (o) -> (f) ->
-  f = path.join process.cwd(), f
+  f = path.join app.process.cwd(), f
   o is f
 
 # The alternative require we use for coveraje and typedjs

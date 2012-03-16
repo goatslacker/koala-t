@@ -7,6 +7,9 @@ path = require 'path'
 
 
 # Boolean. Answers if a file is a CoffeeScript file.
+###
+//+ isCoffeeScript :: String -> String
+###
 isCoffeeScript = (file) ->
   file.match /.coffee$/
 
@@ -25,8 +28,8 @@ getConfig = ->
   return getConfig.options if getConfig.options
 
   confiles = [
-    loadConfig path.join process.env.HOME, '.jshintrc'
-    loadConfig path.join process.cwd(), '.jshintrc'
+    loadConfig path.join app.process.env.HOME, '.jshintrc'
+    loadConfig path.join app.process.cwd(), '.jshintrc'
   ]
 
   config = {}
