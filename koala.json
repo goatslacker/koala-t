@@ -1,5 +1,12 @@
 {
   "lint": ["lib", "src"],
   "vows": ["test/*-test.coffee"],
+  "coverage": {
+    "files": [
+      "lib/lint.js",
+      "lib/utils/fn.js"
+    ],
+    "percentage": 90
+  },
   "typed": ["lib/lint.js"]
 }
