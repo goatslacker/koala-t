@@ -16,7 +16,7 @@ contracts = (file, code, context, signatures) ->
 
   typedfn = typedjs.enforce code
   context = typedfn.getContext context, signatures
-  typed.instances.push typedfn
+  typed.instances.push { file, typedfn }
   dune.string typedfn.instrumentedCode, file, context
 
 
@@ -29,7 +29,17 @@ typed =
   require: (file) ->
     contracts file
 
-  done: -> fn.flatten(typed.instances.map (i) -> i.data.fail).length
+  done: (callback) ->
+    callback fn.flatten(typed.instances.map (i) ->
+      fail = i.typedfn.data.fail
+      if not app.quiet
+        if fail.length is 0
+          app.puts "TypedJS #{i.file}: Success."
+        else
+          app.puts "TypedJS #{i.file}: Failed."
+
+      fail
+    ).length
 
 
 module.exports = typed

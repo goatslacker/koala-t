@@ -49,10 +49,10 @@ coverage =
 # Done is called when the tests are finished running.
 # If files are being covered the results are returned as
 # an exit code. Otherwise it returns 0.
-  done: ->
-    return 0 if coverage.instances.length is 0
+  done: (callback) ->
+    return callback 0 if coverage.instances.length is 0
 
-    fn.sum coverage.instances.map (i) ->
+    callback fn.sum coverage.instances.map (i) ->
       results = i.instance.runtime.getResults()
       total = results.total.coverage
 
