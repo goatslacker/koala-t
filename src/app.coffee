@@ -28,8 +28,9 @@ app
 app.lint = app.lint or options.lint or ['src', 'lib']
 app.test = app.test or options.test or options.vows or ['test']
 app.vows = options.vows
-app.coverage = app.coverage || options.coverage || { files: [] }
+app.coverage = app.coverage or options.coverage or { files: [] }
 app.coverage.percentage or= 80
+app.typed = app.typed or options.typed or []
 
 
 # Mixes in some utility functions

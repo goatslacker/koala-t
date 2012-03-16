@@ -67,3 +67,8 @@ lintFile = (file) ->
 module.exports = lint = (cb, targets) ->
   files = find targets or app.lint
   cb fn.sum files.map lintFile
+
+
+# TypedJS signatures
+`//+ isCoffeeScript :: String -> String
+`

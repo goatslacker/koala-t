@@ -4,6 +4,7 @@ path = require 'path'
 dune = require 'dune'
 imports = require './imports'
 coverage = require './coverage'
+typed = require './typed'
 minimatch = require 'minimatch'
 { find, fn } = app
 
@@ -62,4 +63,5 @@ module.exports = test = (cb, targets) ->
   files = find targets or app.test
   tasks.add files.map (f) -> compileTest f
   tasks.after coverage.done unless app.coverage.files.length is 0
+  tasks.after typed.done unless app.typed.length is 0
   tasks.run (x) -> cb x

@@ -2,6 +2,7 @@ app = require './app'
 path = require 'path'
 
 coverage = require './coverage'
+typedjs = require './typed'
 
 eq = (o) -> (f) ->
   f = path.join process.cwd(), f
@@ -14,14 +15,20 @@ module.exports = imports = (fullPath) ->
   dirname = path.dirname fullPath
   (file) ->
     start = file.substring 0, 2
-    file = path.join(dirname, file)  if start is './' or start is '..'
 
-#    compare = path.resolve file
-    compare = "#{file}.js" unless path.extname file
+    if start is './' or start is '..'
+      file = path.join dirname, file
+      file = "#{file}.js" unless path.extname file
 
-    cover = app.coverage.files.filter(eq compare).pop()
+    cover = app.coverage.files.filter(eq file).pop()
+    typed = app.typed.filter(eq file).pop()
 
-    if cover
-      coverage.require cover
+    if cover or typed
+      if cover and typed
+        typedjs.exportCode coverage.asCode(file), file
+      else if cover
+        coverage.require file
+      else if typed
+        typedjs.require file
     else
       require file
