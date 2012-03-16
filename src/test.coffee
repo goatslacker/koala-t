@@ -61,4 +61,5 @@ module.exports = test = (cb, targets) ->
   tasks = new app.Tasks
   files = find targets or app.test
   tasks.add files.map (f) -> compileTest f
-  tasks.run (x) -> cb fn.sum [x, coverage.done()]
+  tasks.after coverage.done unless app.coverage.files.length is 0
+  tasks.run (x) -> cb x

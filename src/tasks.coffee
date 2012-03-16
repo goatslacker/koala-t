@@ -24,12 +24,20 @@ parallel = (tasks, cb) ->
 class Tasks
   constructor: (@name) ->
     @tasks = []
+    @after_tasks = []
 
   add: (tasks...) ->
     @tasks = @tasks.concat fn.flatten tasks
 
+  after: (tasks...) ->
+    @after_tasks = @after_tasks.concat fn.flatten tasks
+
   run: (cb) ->
-    parallel @tasks, (res...) -> cb fn.sum res
+    parallel @tasks, (res...) =>
+      if @after_tasks.length is 0
+        cb fn.sum res
+      else
+        parallel @after_tasks, (res_after...) -> cb fn.sum res.concat res_after
 
 
 module.exports = Tasks
