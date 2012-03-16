@@ -1,5 +1,4 @@
 {
   "lint": ["lib", "src"],
-  "vows": ["test/*-test.coffee"],
-  "typed": ["lib/lint.js"]
+  "vows": ["test/*-test.coffee"]
 }
