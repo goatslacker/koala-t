@@ -25,37 +25,16 @@ instrument = (file) ->
   { instance, exported }
 
 
-# doRequire takes a file, instruments it, and adds it
-# to our coverage object so we can use it in `coverage.done` later.
-# Returns the exported, instrumented code.
-doRequire = (file) ->
-  { instance, exported } = instrument file
-  coverage.instances.push { file, instance }
-  exported
-
-
 coverage =
   instances: []
 
-# The alternative require we use in coveraje.
-# This determines if the file needs to be covered
-# and calls the appropriate require.
-  require: (fullPath) ->
-    dirname = path.dirname fullPath
-    (file) ->
-      start = file.substring 0, 2
-      file = path.join(dirname, file)  if start is './' or start is '..'
-
-      compare = "#{file}.js" unless path.extname file
-
-      res = app.coverage.files.filter (f) ->
-        f = path.join process.cwd(), f
-        f is compare
-
-      if res.length > 0
-        doRequire res.pop()
-      else
-        require file
+# Takes a file, instruments it, and adds it
+# to our coverage object so we can use it in `coverage.done` later.
+# Returns the exported, instrumented code.
+  require: (file) ->
+    { instance, exported } = instrument file
+    coverage.instances.push { file, instance }
+    exported
 
 # Done is called when the tests are finished running.
 # If files are being covered the results are returned as

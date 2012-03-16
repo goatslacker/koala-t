@@ -2,6 +2,7 @@ app = require './app'
 util = require 'util'
 path = require 'path'
 dune = require 'dune'
+imports = require './imports'
 coverage = require './coverage'
 minimatch = require 'minimatch'
 { find, fn } = app
@@ -36,7 +37,7 @@ runVows = (exported) ->
 # Returns a function which runs the tests
 compileTest = (file) ->
   fullPath = path.join process.cwd(), file
-  exported = dune.file fullPath, null, coverage.require fullPath
+  exported = dune.file fullPath, null, imports fullPath
 
   return runVows exported if app.vows
 
