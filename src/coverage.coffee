@@ -18,7 +18,7 @@ instrument = (file) ->
     (ctx, inst) =>
       instance = inst
       context = ctx
-    { globals: 'node', quiet: true }
+    { globals: 'node', quiet: true, useServer: app.coverageServer }
     app.noop
   )
 
