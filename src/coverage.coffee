@@ -10,13 +10,11 @@ coveraje = require 'coveraje'
 #
 # Returns the instrumented exported Object, and the instance
 instrument = (file) ->
-  instance = {}
   context = {}
 
-  coveraje.cover(
-    fs.readFileSync(file, 'utf-8'),
+  instance = coveraje.coverNode(
+    file
     (ctx, inst) =>
-      instance = inst
       context = ctx
     { globals: 'node', quiet: true, useServer: app.coverageServer }
     app.noop
@@ -24,7 +22,7 @@ instrument = (file) ->
 
   coverage.instances.push { file, instance }
 
-  { instance, context }
+  instance
 
 
 coverage =
@@ -32,10 +30,10 @@ coverage =
 
 
   asCode: (file) ->
-    { instance, context } = instrument file
+    instance = instrument file
     {
       code: instance.getCodes()['initial code'].codeToRun
-      context: context
+      context: instance.context
     }
 
 
@@ -43,8 +41,8 @@ coverage =
 # to our coverage object so we can use it in `coverage.done` later.
 # Returns the exported, instrumented code.
   require: (file) ->
-    { instance, context } = instrument file
-    context.module.exports
+    instance = instrument file
+    instance.context.module.exports
 
 # Done is called when the tests are finished running.
 # If files are being covered the results are returned as
