@@ -1,31 +1,27 @@
 {
   "name": "koala-t",
-  "version": "0.1.0",
-
+  "version": "0.1.1",
   "author": "Josh Perez <josh@goatslacker.com>",
   "description": "Koala-t checks for code quality",
-
   "bin": {
     "koala-t": "./bin/koala-t"
   },
-
   "scripts": {
     "pretest": "rm -f test/*-test.js",
     "test": "./bin/koala-t",
     "prepublish": "docco koala.js lib/*.js lib/utils/*.js"
   },
-
   "main": "./lib/koala.js",
-
   "repository": {
     "type": "git",
-    "url": "https://github.com/goatslacker/koala-t"
+    "url": "git://github.com/goatslacker/koala-t.git"
   },
-
-  "keywords": ["code quality", "lint", "test"],
-
+  "keywords": [
+    "code quality",
+    "lint",
+    "test"
+  ],
   "license": "MIT",
-
   "dependencies": {
     "coveraje": "latest",
     "typedjs": "latest",
@@ -34,10 +30,13 @@
     "coffeelint": "latest",
     "commander": "latest"
   },
-
   "devDependencies": {
     "coffee-script": "latest",
     "docco": "latest",
     "vows": "latest"
+  },
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
   }
 }
